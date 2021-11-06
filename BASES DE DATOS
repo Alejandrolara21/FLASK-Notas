@@ -1,0 +1,21 @@
+CREATE DATABASE notas_flask;
+
+USE notas_flask;
+
+CREATE TABLE estado(
+	id INT(2) NOT NULL AUTO_INCREMENT,
+	nombre VARCHAR(20),
+	PRIMARY KEY (id)
+);
+
+
+CREATE TABLE notas(
+	id INT(11) NOT NULL AUTO_INCREMENT,
+	titulo VARCHAR(30),
+	descripcion VARCHAR(100),
+	estado INT(2),
+	KEY estado(estado),
+	CONSTRAINT estado_FK
+	FOREIGN KEY (estado) REFERENCES estado(id),
+	PRIMARY KEY (id)
+);

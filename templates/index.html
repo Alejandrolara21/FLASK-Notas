@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <h1>NOTAS - FLASK</h1>
+    </div>
+    <div>
+        <div>
+            <form>
+                <div>
+                    <label for="titulo">Titulo:</label>
+                    <input type="text" name="titulo" id="titulo">
+                </div>
+                <div>
+                    <label for="descripcion">Descripcion:</label>
+                    <textarea name="descripcion" id="descripcion" cols="30" rows="5"></textarea>
+                </div>
+                <div>
+                    <input id="botonNota" type="submit" value="Crear Nota">
+                </div>
+            </form>
+        </div>
+        <div>
+            <table>
+                <thead>
+                    <th>Titulo</th>
+                    <th>Descripcion</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </thead>
+                <tbody>
+                    {% for nota in data %}
+                        <tr>
+                            <td>{{nota[1]}}</td>
+                            <td>{{nota[2]}}</td>
+                            <td>
+                                <select id="estado" data-idNota="{{nota[0]}}">
+                                    <option value="1" 
+                                    {% if(nota[3] == 1):%} 
+                                        selected
+                                    {% endif %}
+                                    >Activo</option>
+                                    <option value="2"
+                                    {% if(nota[3] == 2):%} 
+                                        selected
+                                    {% endif %}
+                                    >Inactivo</option>
+                                </select>
+                            </td>
+                            <td>
+                                <div>
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-edit" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <path d="M9 7h-3a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-3" />
+                                        <path d="M9 15h3l8.5 -8.5a1.5 1.5 0 0 0 -3 -3l-8.5 8.5v3" />
+                                        <line x1="16" y1="5" x2="19" y2="8" />
+                                      </svg></a>
+                                </div>
+                                <div>
+                                    <a href="#"><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-trash" width="28" height="28" viewBox="0 0 24 24" stroke-width="1.5" stroke="#2c3e50" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                                        <line x1="4" y1="7" x2="20" y2="7" />
+                                        <line x1="10" y1="11" x2="10" y2="17" />
+                                        <line x1="14" y1="11" x2="14" y2="17" />
+                                        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+                                        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+                                      </svg></a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
