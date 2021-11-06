@@ -1,4 +1,4 @@
-from flask import Flask, json, render_template, request, redirect,url_for,flash,make_response,jsonify
+from flask import Flask, render_template, request,json, redirect,url_for,flash,make_response,jsonify
 from flask.helpers import flash
 from flask_mysqldb import MySQL
 from werkzeug.utils import escape
@@ -17,14 +17,12 @@ def inicio():
     conexion = db.connection.cursor()
     conexion.execute("SELECT * FROM notas")
     data = conexion.fetchall()
-    print(data)
 
     return render_template('index.html',data=data)
 
 
 @app.route('/agregarNota', methods=["POST"])
 def agregarNota():
-    
     try:
         objNota = request.get_json()
 
@@ -35,50 +33,87 @@ def agregarNota():
         conexion.execute("INSERT INTO notas (titulo,descripcion,estado) VALUES (%s,%s,%s);",[titulo, descripcion,estado])
         db.connection.commit()
 
-        respuesta = make_response(jsonify({"message": "JSON received"}),200)
 
-        return respuesta
+
+        conexion.execute("SELECT * FROM notas")
+        data = conexion.fetchall()
+
+        jsonObj = json.dumps(data)
+
+        respuesta = make_response(jsonify(jsonObj),200)
+        return render_template('listadoNotas.html',data=data)
 
     except:
         respuesta = make_response(jsonify({"message": "ERROR MYSQL"}),500)
-
         return respuesta
-        #print(request.form['objNota'])
-        # flash("Contacto AGREGRADO CORRECTAMENTE")
-
 
 @app.route('/cambiarEstado',methods=["POST"])
 def cambiarEstado():
-
     try:
         objEstado = request.get_json()
 
         idNota = objEstado['id']
         estado = objEstado['estado']
-
-        print(idNota)
-        print(estado)
         conexion = db.connection.cursor()
         
         conexion.execute("UPDATE notas SET estado = (%s) WHERE id = %s;",[estado, idNota])
         db.connection.commit()
-        respuesta = make_response(jsonify({"message": "ESTADO RECIBIDO"}),200)
+        conexion.execute("SELECT * FROM notas")
+        data = conexion.fetchall()
 
-        return respuesta
+        jsonObj = json.dumps(data)
+
+        respuesta = make_response(jsonify(jsonObj),200)
+        return render_template('listadoNotas.html',data=data)
 
     except:
         respuesta = make_response(jsonify({"message": "ERROR MYSQL"}),500)
 
         return respuesta
-    return "hola"
 
-@app.route('/editarNota')
+@app.route('/editarNota',methods=["POST"])
 def editarNota():
-    return 'EDITAR NOTA'
+    try:
+        objNota = request.get_json()
 
-@app.route('/eliminarNota')
+        idNota = objNota['id']
+        titulo = objNota['titulo']
+        descripcion = objNota['descripcion']
+
+        conexion = db.connection.cursor()
+        conexion.execute("UPDATE notas SET titulo = (%s),descripcion = (%s) WHERE id = %s;",[titulo, descripcion,idNota])
+        db.connection.commit()
+
+        conexion.execute("SELECT * FROM notas")
+        data = conexion.fetchall()
+
+        jsonObj = json.dumps(data)
+
+        respuesta = make_response(jsonify(jsonObj),200)
+        return render_template('listadoNotas.html',data=data)
+
+    except:
+        respuesta = make_response(jsonify({"message": "ERROR MYSQL"}),500)
+        return respuesta
+
+@app.route('/eliminarNota',methods=["GET"])
 def eliminarNota():
-    return 'ELIMINAR NOTA'
+    try:
+        idNota = request.args.get("id")
+        conexion = db.connection.cursor()
+        
+        conexion.execute("DELETE FROM notas WHERE id = %s LIMIT 1;",[idNota,])
+        db.connection.commit()
+        conexion.execute("SELECT * FROM notas")
+        data = conexion.fetchall()
+
+        jsonObj = json.dumps(data)
+
+        respuesta = make_response(jsonify(jsonObj),200)
+        return render_template('listadoNotas.html',data=data)
+    except:
+        respuesta = make_response(jsonify({"message": "ERROR MYSQL"}),500)
+        return respuesta
 
 if __name__ == '__main__':
     app.run(port = 5000,debug=True)
